@@ -1,0 +1,71 @@
+/* Fuente Inter desde Google Fonts — debe ir ANTES de @tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900;
+    @apply dark:bg-slate-900 dark:text-white;
+  }
+}
+
+@layer utilities {
+  /* Oculta el scrollbar pero mantiene el scroll funcional */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Scrollbar personalizado para el área de mensajes */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+  .dark .scrollbar-thin {
+    scrollbar-color: theme('colors.slate.700') transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+  }
+}
+
+/* Estilos del prose (markdown en el chat) */
+.prose {
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+}
+
+.prose code {
+  @apply bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs font-mono;
+  @apply text-primary-700 dark:text-primary-300;
+}
+
+.prose pre {
+  @apply bg-slate-100 dark:bg-slate-700 rounded-xl p-3 overflow-x-auto;
+}
+
+.prose pre code {
+  @apply bg-transparent px-0 py-0;
+}
+
+.prose a {
+  @apply no-underline hover:underline;
+}
