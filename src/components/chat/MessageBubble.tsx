@@ -1,13 +1,16 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { Message } from '../../types'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface MessageBubbleProps {
   message: Message
 }
 
 export function MessageBubble({ message }: MessageBubbleProps) {
+  const { lang } = useLanguage()
   const isUser = message.role === 'user'
+  const time = message.timestamp.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' })
 
   if (isUser) {
     return (
@@ -17,7 +20,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
           </div>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 text-right pr-1">
-            {message.timestamp.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}
+            {time}
           </p>
         </div>
       </div>
@@ -41,7 +44,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           </div>
         </div>
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 pl-1">
-          {message.timestamp.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}
+          {time}
         </p>
       </div>
     </div>

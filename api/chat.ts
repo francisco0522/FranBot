@@ -5,6 +5,7 @@
  * Usa la API de Anthropic con:
  *   - Streaming SSE para respuestas en tiempo real
  *   - Prompt caching para reducir costos y latencia
+ *   - Fetch en tiempo real de datos de GitHub
  *   - Validación básica de la request
  */
 
@@ -33,6 +34,109 @@ function isRateLimited(ip: string): boolean {
   if (entry.count > RATE_LIMIT) return true
 
   return false
+}
+
+// ── Cache de GitHub en memoria ───────────────────────────────
+// Se mantiene por 10 minutos para no hacer fetch en cada request.
+// Se reinicia con cada cold start del serverless function.
+let githubCache: { data: string; cachedAt: number } | null = null
+const GITHUB_CACHE_TTL = 10 * 60 * 1000 // 10 minutos
+
+interface GitHubRepo {
+  name: string
+  description: string | null
+  html_url: string
+  language: string | null
+  stargazers_count: number
+  fork: boolean
+  archived: boolean
+  pushed_at: string
+  topics: string[]
+}
+
+interface GitHubProfile {
+  name: string | null
+  bio: string | null
+  public_repos: number
+  followers: number
+  following: number
+  company: string | null
+  location: string | null
+  blog: string | null
+  created_at: string
+}
+
+async function fetchGitHubData(username: string): Promise<string> {
+  // Devuelve el cache si sigue fresco
+  if (githubCache && Date.now() - githubCache.cachedAt < GITHUB_CACHE_TTL) {
+    return githubCache.data
+  }
+
+  const headers: Record<string, string> = {
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'FranBot-Portfolio/1.0',
+  }
+
+  // Si hay token de GitHub, lo usamos para mayor rate limit (5000 req/h vs 60)
+  if (process.env.GITHUB_TOKEN) {
+    headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
+  }
+
+  try {
+    const [profileRes, reposRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${username}`, { headers }),
+      fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=pushed`, { headers }),
+    ])
+
+    if (!profileRes.ok || !reposRes.ok) {
+      throw new Error(`GitHub API error: ${profileRes.status} / ${reposRes.status}`)
+    }
+
+    const profile = await profileRes.json() as GitHubProfile
+    const allRepos = await reposRes.json() as GitHubRepo[]
+
+    // Filtra forks y archivados, ordena por actividad reciente
+    const ownRepos = allRepos
+      .filter(r => !r.fork && !r.archived)
+      .slice(0, 20) // top 20 más recientes
+
+    // Lenguajes únicos usados
+    const languages = [...new Set(
+      ownRepos.map(r => r.language).filter(Boolean)
+    )].join(', ')
+
+    // Lista de repos con descripción
+    const repoList = ownRepos
+      .map(r => {
+        const stars = r.stargazers_count > 0 ? ` ⭐${r.stargazers_count}` : ''
+        const lang = r.language ? ` [${r.language}]` : ''
+        const desc = r.description ? ` — ${r.description}` : ''
+        const topics = r.topics?.length ? ` (${r.topics.join(', ')})` : ''
+        return `  • ${r.name}${lang}${stars}${desc}${topics}`
+      })
+      .join('\n')
+
+    const data = `
+🐙 DATOS EN TIEMPO REAL DE GITHUB (github.com/${username})
+• Repositorios públicos propios: ${ownRepos.length} (de ${profile.public_repos} totales)
+• Seguidores: ${profile.followers} | Siguiendo: ${profile.following}
+• Bio: ${profile.bio ?? 'Sin bio'}
+${profile.company ? `• Empresa: ${profile.company}` : ''}
+• Lenguajes usados: ${languages || 'N/A'}
+
+Repositorios recientes (ordenados por última actividad):
+${repoList || '  (sin repositorios propios públicos)'}
+`.trim()
+
+    githubCache = { data, cachedAt: Date.now() }
+    return data
+  } catch (err) {
+    console.error('Error fetching GitHub data:', err)
+    // Si falla el fetch, retornamos string vacío — el bot seguirá funcionando
+    // con la info estática del SYSTEM_PROMPT
+    return ''
+  }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -73,6 +177,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Limita el historial a los últimos 20 mensajes para no exceder el contexto
   const recentMessages = messages.slice(-20)
 
+  // Fetch datos de GitHub en paralelo mientras preparamos todo lo demás
+  const githubData = await fetchGitHubData('francisco0522')
+
+  // Construye el system prompt final: base estático + datos frescos de GitHub
+  const fullSystemPrompt = githubData
+    ? `${SYSTEM_PROMPT}\n\n${githubData}`
+    : SYSTEM_PROMPT
+
   // Configura los headers SSE
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache, no-transform')
@@ -86,12 +198,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     /**
      * Usamos messages.stream() para streaming SSE.
-     * El system prompt usa cache_control para que Anthropic lo cachee
-     * automáticamente — reduce costos hasta un 90% en el input cacheado
-     * y baja la latencia en el Time to First Token (TTFT).
+     * El system prompt usa cache_control para que Anthropic lo cachee.
+     * Nota: el cache se invalida cuando cambia el githubData (cada 10 min),
+     * pero entre peticiones del mismo cold start se reutiliza el cache de Anthropic.
      *
-     * Modelo: claude-opus-4-7 (el más capaz del catálogo actual)
-     * El system prompt extenso (~1000+ tokens) se cachea tras la primera llamada.
+     * Modelo: claude-opus-4-7
      */
     const stream = client.messages.stream({
       model: 'claude-opus-4-7',
@@ -99,9 +210,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       system: [
         {
           type: 'text',
-          text: SYSTEM_PROMPT,
-          // Cache control: Anthropic cachea este prefijo automáticamente.
-          // El cache es válido por 5 minutos (ephemeral).
+          text: fullSystemPrompt,
           cache_control: { type: 'ephemeral' },
         },
       ],

@@ -1,15 +1,19 @@
+import { useLanguage } from '../../i18n/LanguageContext'
+
 interface ThemeToggleProps {
   isDark: boolean
   onToggle: () => void
 }
 
 export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
+  const { t } = useLanguage()
+  const label = isDark ? t.switchToLight : t.switchToDark
   return (
     <button
       onClick={onToggle}
       className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-      title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-      aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+      title={label}
+      aria-label={label}
     >
       {isDark ? (
         /* Ícono sol */

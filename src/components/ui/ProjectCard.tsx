@@ -1,10 +1,12 @@
 import type { Project } from '../../types'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface ProjectCardProps {
   project: Project
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const { lang, t } = useLanguage()
   return (
     <div className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col">
       {/* Imagen del proyecto */}
@@ -28,7 +30,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
         {project.featured && (
           <div className="absolute top-3 right-3 bg-primary-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-            Destacado
+            {t.featuredBadge}
           </div>
         )}
         {project.year && (
@@ -45,7 +47,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </h3>
 
         <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed flex-1">
-          {project.longDescription || project.description}
+          {(project.longDescription ?? project.description)[lang]}
         </p>
 
         {/* Stack de tecnologías */}
@@ -83,9 +85,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
               className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
-              Demo en vivo
+              {t.liveDemo}
             </a>
           )}
         </div>

@@ -1,4 +1,5 @@
 import type { WorkExperience, Education } from '../../types'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface WorkTimelineItemProps {
   item: WorkExperience
@@ -6,6 +7,8 @@ interface WorkTimelineItemProps {
 }
 
 export function WorkTimelineItem({ item, isLast }: WorkTimelineItemProps) {
+  const { lang, t } = useLanguage()
+  const achievements = item.achievements?.[lang]
   return (
     <div className="relative flex gap-4 sm:gap-6">
       {/* Línea vertical y punto */}
@@ -20,22 +23,22 @@ export function WorkTimelineItem({ item, isLast }: WorkTimelineItemProps) {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white">{item.position}</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white">{item.position[lang]}</h3>
               <p className="text-primary-600 dark:text-primary-400 font-medium text-sm">{item.company}</p>
             </div>
             <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full whitespace-nowrap self-start">
-              {item.startDate} – {item.endDate ?? 'Presente'}
+              {item.startDate[lang]} – {item.endDate?.[lang] ?? t.present}
             </span>
           </div>
 
           <p className="text-sm text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
-            {item.description}
+            {item.description[lang]}
           </p>
 
           {/* Logros */}
-          {item.achievements && item.achievements.length > 0 && (
+          {achievements && achievements.length > 0 && (
             <ul className="mb-3 space-y-1">
-              {item.achievements.map((achievement, i) => (
+              {achievements.map((achievement, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
                   <span className="text-primary-500 mt-0.5 shrink-0">▸</span>
                   {achievement}
@@ -67,6 +70,7 @@ interface EducationItemProps {
 }
 
 export function EducationItem({ item, isLast }: EducationItemProps) {
+  const { lang } = useLanguage()
   return (
     <div className="relative flex gap-4 sm:gap-6">
       {/* Línea vertical y punto */}
@@ -80,18 +84,18 @@ export function EducationItem({ item, isLast }: EducationItemProps) {
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white">{item.field}</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white">{item.field[lang]}</h3>
               <p className="text-accent-600 dark:text-accent-400 font-medium text-sm">
-                {item.degree} — {item.institution}
+                {item.degree[lang]} — {item.institution}
               </p>
             </div>
             <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full whitespace-nowrap self-start">
-              {item.startDate === item.endDate ? item.startDate : `${item.startDate} – ${item.endDate}`}
+              {item.startDate[lang] === item.endDate[lang] ? item.startDate[lang] : `${item.startDate[lang]} – ${item.endDate[lang]}`}
             </span>
           </div>
           {item.description && (
             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              {item.description}
+              {item.description[lang]}
             </p>
           )}
         </div>

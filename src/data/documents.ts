@@ -2,40 +2,36 @@ import type { Document } from '../types'
 
 // ============================================================
 // DOCUMENTOS DESCARGABLES
-// Coloca los archivos en /public/docs/nombre-archivo.pdf
+// Coloca los archivos en /public/
 // ============================================================
 
 export const DOCUMENTS: Document[] = [
   {
-    id: 'cv',
-    title: 'Currículum Vitae',
-    description: 'CV completo con experiencia, educación y habilidades técnicas. Actualizado 2024.',
+    id: 'cv-es',
+    title: {
+      es: 'Currículum Vitae (Español)',
+      en: 'Resume (Spanish)',
+    },
+    description: {
+      es: 'CV completo de Francisco Londoño en español: experiencia, educación, proyectos y habilidades.',
+      en: "Francisco Londoño's full CV in Spanish: experience, education, projects and skills.",
+    },
     type: 'cv',
-    fileUrl: '/cv.pdf',
+    fileUrl: '/cv-es.pdf',
     icon: '📄',
   },
   {
-    id: 'portfolio-pdf',
-    title: 'Portafolio de Proyectos',
-    description: 'PDF con casos de estudio detallados de los proyectos más relevantes.',
-    type: 'portfolio',
-    fileUrl: '/docs/portfolio.pdf',
-    icon: '🗂️',
-  },
-  {
-    id: 'cert-aws',
-    title: 'AWS Certified Developer',
-    description: 'Certificación de Amazon Web Services — Developer Associate (2022).',
-    type: 'certificate',
-    fileUrl: '/docs/cert-aws.pdf',
-    icon: '☁️',
-  },
-  {
-    id: 'cert-fullstackopen',
-    title: 'Full Stack Open',
-    description: 'Certificación de la Universidad de Helsinki en desarrollo full stack moderno.',
-    type: 'certificate',
-    fileUrl: '/docs/cert-fullstackopen.pdf',
-    icon: '🎓',
+    id: 'cv-en',
+    title: {
+      es: 'Currículum Vitae (Inglés)',
+      en: 'Resume (English)',
+    },
+    description: {
+      es: 'CV completo de Francisco Londoño en inglés: experiencia, educación, proyectos y habilidades.',
+      en: "Francisco Londoño's full CV in English: experience, education, projects and skills.",
+    },
+    type: 'cv',
+    fileUrl: '/cv-en.pdf',
+    icon: '📄',
   },
 ]
