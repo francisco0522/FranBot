@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface MessageInputProps {
   onSend: (message: string) => void
@@ -8,6 +9,7 @@ interface MessageInputProps {
 }
 
 export function MessageInput({ onSend, disabled, isStreaming, onCancel }: MessageInputProps) {
+  const { t } = useLanguage()
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -45,7 +47,7 @@ export function MessageInput({ onSend, disabled, isStreaming, onCancel }: Messag
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Escribe tu pregunta…"
+            placeholder={t.inputPlaceholder}
             rows={1}
             disabled={disabled && !isStreaming}
             className="flex-1 resize-none bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none leading-relaxed max-h-[120px] py-1 disabled:opacity-50"
@@ -56,7 +58,7 @@ export function MessageInput({ onSend, disabled, isStreaming, onCancel }: Messag
             <button
               onClick={onCancel}
               className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shrink-0"
-              title="Cancelar respuesta"
+              title={t.cancelResponse}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="4" y="4" width="16" height="16" rx="2" strokeWidth={2} />
@@ -69,7 +71,7 @@ export function MessageInput({ onSend, disabled, isStreaming, onCancel }: Messag
             onClick={handleSubmit}
             disabled={!input.trim() || disabled}
             className="p-2 rounded-xl bg-primary-600 hover:bg-primary-700 disabled:bg-slate-200 dark:disabled:bg-slate-700 text-white disabled:text-slate-400 transition-all duration-200 shrink-0 disabled:cursor-not-allowed"
-            title="Enviar (Enter)"
+            title={t.sendEnter}
           >
             {disabled && !isStreaming ? (
               // Loading spinner
@@ -87,8 +89,8 @@ export function MessageInput({ onSend, disabled, isStreaming, onCancel }: Messag
         </div>
 
         <p className="text-center text-xs text-slate-400 dark:text-slate-600 mt-2">
-          Presiona <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">Enter</kbd> para enviar
-          {' '}· <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">Shift+Enter</kbd> para nueva línea
+          <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">Enter</kbd> {t.pressToSend[0]}
+          {' '}· <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">Shift+Enter</kbd> {t.pressToSend[1]}
         </p>
       </div>
     </div>

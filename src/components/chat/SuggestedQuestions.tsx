@@ -1,14 +1,11 @@
+import { useLanguage } from '../../i18n/LanguageContext'
+
 interface SuggestedQuestionsProps {
   onSelect: (question: string) => void
 }
 
-const SUGGESTED_QUESTIONS = [
-  '¿Cuál es su experiencia con React y el frontend?',
-  'Cuéntame sobre su proyecto más reciente',
-  '¿Qué lo hace diferente a otros desarrolladores?',
-]
-
 export function SuggestedQuestions({ onSelect }: SuggestedQuestionsProps) {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col items-center gap-6 py-8 px-4 animate-fade-in">
       {/* Intro del asistente */}
@@ -17,17 +14,16 @@ export function SuggestedQuestions({ onSelect }: SuggestedQuestionsProps) {
           <span className="text-white text-2xl font-bold">A</span>
         </div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-          ¡Hola! Soy el asistente de Francisco 👋
+          {t.greeting}
         </h2>
         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-          Estoy aquí para contarte sobre su experiencia, proyectos y habilidades.
-          ¿Qué te gustaría saber?
+          {t.greetingSubtitle}
         </p>
       </div>
 
       {/* Preguntas sugeridas */}
       <div className="flex flex-col gap-2.5 w-full max-w-md">
-        {SUGGESTED_QUESTIONS.map(question => (
+        {t.suggestedQuestions.map(question => (
           <button
             key={question}
             onClick={() => onSelect(question)}

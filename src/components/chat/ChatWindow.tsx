@@ -5,8 +5,10 @@ import { SuggestedQuestions } from './SuggestedQuestions'
 import { TypingIndicator } from './TypingIndicator'
 import { useChat } from '../../hooks/useChat'
 import { CANDIDATE } from '../../../data/context'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 export function ChatWindow() {
+  const { t } = useLanguage()
   const { messages, isLoading, isStreaming, sendMessage, clearMessages, cancelStream } = useChat()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -44,15 +46,15 @@ export function ChatWindow() {
 
           <div>
             <p className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
-              Asistente de {CANDIDATE.name.split(' ')[0]}
+              {t.assistantOf(CANDIDATE.name.split(' ')[0])}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {isStreaming ? (
-                <span className="text-primary-500 font-medium">Escribiendo…</span>
+                <span className="text-primary-500 font-medium">{t.writing}</span>
               ) : isLoading ? (
-                <span className="text-slate-400">Pensando…</span>
+                <span className="text-slate-400">{t.thinking}</span>
               ) : (
-                'En línea · Pregúntame sobre él'
+                t.onlineAskMe
               )}
             </p>
           </div>
@@ -63,9 +65,9 @@ export function ChatWindow() {
           <button
             onClick={clearMessages}
             className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-            title="Nueva conversación"
+            title={t.newConversation}
           >
-            Nueva conversación
+            {t.newConversation}
           </button>
         )}
       </div>

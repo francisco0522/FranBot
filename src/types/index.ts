@@ -2,6 +2,12 @@
 // TIPOS GLOBALES DE LA APLICACIÓN
 // ============================================================
 
+/** Idiomas soportados por el portafolio */
+export type Locale = 'es' | 'en'
+
+/** Valor traducido a cada idioma soportado */
+export type Localized<T = string> = Record<Locale, T>
+
 /** Mensaje en el chat */
 export interface Message {
   id: string
@@ -22,8 +28,8 @@ export interface ChatState {
 export interface Project {
   id: string
   title: string
-  description: string
-  longDescription?: string
+  description: Localized
+  longDescription?: Localized
   stack: string[]
   image?: string
   githubUrl?: string
@@ -36,11 +42,11 @@ export interface Project {
 export interface WorkExperience {
   id: string
   company: string
-  position: string
-  startDate: string
-  endDate?: string // undefined = "Presente"
-  description: string
-  achievements?: string[]
+  position: Localized
+  startDate: Localized
+  endDate?: Localized // undefined = "Presente" / "Present"
+  description: Localized
+  achievements?: Localized<string[]>
   skills: string[]
   logo?: string
 }
@@ -49,19 +55,19 @@ export interface WorkExperience {
 export interface Education {
   id: string
   institution: string
-  degree: string
-  field: string
-  startDate: string
-  endDate: string
-  description?: string
+  degree: Localized
+  field: Localized
+  startDate: Localized
+  endDate: Localized
+  description?: Localized
   logo?: string
 }
 
 /** Documento descargable */
 export interface Document {
   id: string
-  title: string
-  description: string
+  title: Localized
+  description: Localized
   type: 'cv' | 'certificate' | 'portfolio' | 'other'
   fileUrl: string
   previewUrl?: string

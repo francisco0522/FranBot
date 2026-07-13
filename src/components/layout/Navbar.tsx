@@ -1,6 +1,8 @@
 import { ThemeToggle } from './ThemeToggle'
+import { LanguageToggle } from './LanguageToggle'
 import type { Section } from '../../types'
 import { CANDIDATE } from '../../../data/context'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface NavbarProps {
   activeSection: Section
@@ -9,15 +11,17 @@ interface NavbarProps {
   onToggleTheme: () => void
 }
 
-const NAV_ITEMS: { id: Section; label: string; emoji: string }[] = [
-  { id: 'chat', label: 'Chat', emoji: '💬' },
-  { id: 'projects', label: 'Proyectos', emoji: '🚀' },
-  { id: 'experience', label: 'Experiencia', emoji: '💼' },
-  { id: 'documents', label: 'Documentos', emoji: '📄' },
-  { id: 'contact', label: 'Contacto', emoji: '✉️' },
-]
-
 export function Navbar({ activeSection, onSectionChange, isDark, onToggleTheme }: NavbarProps) {
+  const { t } = useLanguage()
+
+  const NAV_ITEMS: { id: Section; label: string; emoji: string }[] = [
+    { id: 'chat', label: t.navChat, emoji: '💬' },
+    { id: 'projects', label: t.navProjects, emoji: '🚀' },
+    { id: 'experience', label: t.navExperience, emoji: '💼' },
+    { id: 'documents', label: t.navDocuments, emoji: '📄' },
+    { id: 'contact', label: t.navContact, emoji: '✉️' },
+  ]
+
   return (
     <header className="h-14 border-b border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm flex items-center justify-between px-4 gap-4 shrink-0 z-10">
       {/* Logo / Nombre */}
@@ -61,6 +65,7 @@ export function Navbar({ activeSection, onSectionChange, isDark, onToggleTheme }
 
       {/* Acciones derecha */}
       <div className="flex items-center gap-1 shrink-0">
+        <LanguageToggle />
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
         {/* Link directo al CV */}
         <a
@@ -73,7 +78,7 @@ export function Navbar({ activeSection, onSectionChange, isDark, onToggleTheme }
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          CV
+          {t.downloadCv}
         </a>
       </div>
     </header>

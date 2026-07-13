@@ -1,7 +1,9 @@
 import { useState, useCallback, useRef } from 'react'
 import type { Message } from '../types'
+import { useLanguage } from '../i18n/LanguageContext'
 
 export function useChat() {
+  const { t } = useLanguage()
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
@@ -48,7 +50,7 @@ export function useChat() {
       }
 
       if (!response.body) {
-        throw new Error('No se recibió respuesta del servidor')
+        throw new Error(t.noServerResponse)
       }
 
       // Prepara el mensaje del asistente vacío (se va llenando con el stream)
@@ -120,7 +122,7 @@ export function useChat() {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : 'Ocurrió un error inesperado. Por favor intenta de nuevo.'
+          : t.unexpectedError
 
       setError(errorMessage)
 
@@ -130,7 +132,7 @@ export function useChat() {
         {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content: `Lo siento, hubo un problema al obtener la respuesta. ${errorMessage}`,
+          content: `${t.chatErrorPrefix} ${errorMessage}`,
           timestamp: new Date(),
         },
       ])
@@ -139,7 +141,7 @@ export function useChat() {
       setIsStreaming(false)
       abortControllerRef.current = null
     }
-  }, [messages, isLoading, isStreaming])
+  }, [messages, isLoading, isStreaming, t])
 
   const clearMessages = useCallback(() => {
     setMessages([])
