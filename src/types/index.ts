@@ -76,3 +76,11 @@ export interface Document {
 
 /** Secciones de la aplicación */
 export type Section = 'chat' | 'projects' | 'experience' | 'documents' | 'contact'
+
+/** Acción de UI que el chatbot puede disparar vía tool use */
+export type ToolAction =
+  | { name: 'navigate_section'; input: { section: Section } }
+  | { name: 'highlight_project'; input: { project_id: string } }
+  | { name: 'set_theme'; input: { theme: 'light' | 'dark' } }
+  | { name: 'set_language'; input: { locale: Locale } }
+  | { name: string; input: Record<string, unknown> }
