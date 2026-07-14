@@ -8,12 +8,21 @@ export type Locale = 'es' | 'en'
 /** Valor traducido a cada idioma soportado */
 export type Localized<T = string> = Record<Locale, T>
 
+/** Sugerencia de navegación que el chatbot ofrece al final de un mensaje.
+ *  No cambia la vista automáticamente: se muestra como un botón (CTA). */
+export interface NavSuggestion {
+  section: Section
+  projectId?: string
+}
+
 /** Mensaje en el chat */
 export interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  /** Acceso directo sugerido por el asistente (se renderiza como botón) */
+  navSuggestion?: NavSuggestion
 }
 
 /** Estado del chat */

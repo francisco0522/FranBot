@@ -24,6 +24,9 @@ export interface UIStrings {
   thinking: string
   onlineAskMe: string
   newConversation: string
+  // CTA de navegación sugerida por el chatbot
+  viewProjectCta: (title: string) => string
+  viewSectionCta: (section: string) => string
   // Suggested questions
   greeting: string
   greetingSubtitle: string
@@ -88,6 +91,8 @@ export const TRANSLATIONS: Record<Locale, UIStrings> = {
     thinking: 'Pensando…',
     onlineAskMe: 'En línea · Pregúntame sobre él',
     newConversation: 'Nueva conversación',
+    viewProjectCta: (title: string) => `Ver ${title} en Proyectos`,
+    viewSectionCta: (section: string) => `Ir a ${section}`,
     greeting: '¡Hola! Soy el asistente de Francisco 👋',
     greetingSubtitle:
       'Estoy aquí para contarte sobre su experiencia, proyectos y habilidades. ¿Qué te gustaría saber?',
@@ -149,6 +154,8 @@ export const TRANSLATIONS: Record<Locale, UIStrings> = {
     thinking: 'Thinking…',
     onlineAskMe: 'Online · Ask me about him',
     newConversation: 'New conversation',
+    viewProjectCta: (title: string) => `View ${title} in Projects`,
+    viewSectionCta: (section: string) => `Go to ${section}`,
     greeting: "Hi! I'm Francisco's assistant 👋",
     greetingSubtitle:
       "I'm here to tell you about his experience, projects and skills. What would you like to know?",

@@ -90,7 +90,7 @@ export function ChatWindow({ onToolAction }: ChatWindowProps) {
             /* Lista de mensajes */
             <div className="flex flex-col gap-4">
               {messages.map(message => (
-                <MessageBubble key={message.id} message={message} />
+                <MessageBubble key={message.id} message={message} onToolAction={onToolAction} />
               ))}
 
               {/* Indicador de "escribiendo..." mientras carga */}
