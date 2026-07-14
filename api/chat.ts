@@ -12,6 +12,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import Anthropic from '@anthropic-ai/sdk'
 import { SYSTEM_PROMPT } from '../data/context.js'
+import { UI_TOOLS } from '../data/tools.js'
 
 // Aumenta el timeout máximo en Vercel (segundos)
 export const config = { maxDuration: 30 }
@@ -203,33 +204,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
      * pero entre peticiones del mismo cold start se reutiliza el cache de Anthropic.
      *
      * Modelo: claude-opus-4-7
+     *
+     * Bucle agéntico: el modelo puede pedir tools que controlan la UI
+     * (navegar, resaltar proyecto, tema, idioma). Como se ejecutan en el
+     * cliente, respondemos tool_result 'ok' y volvemos a streamear hasta
+     * que el modelo cierre con texto.
      */
-    const stream = client.messages.stream({
-      model: 'claude-opus-4-7',
-      max_tokens: 1024,
-      system: [
-        {
-          type: 'text',
-          text: fullSystemPrompt,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: recentMessages,
-    })
+    const conversation: Anthropic.MessageParam[] = [...recentMessages]
+    const MAX_TURNS = 5
 
-    // Envía cada fragmento de texto al cliente
-    stream.on('text', (text) => {
-      res.write(`data: ${JSON.stringify({ text })}\n\n`)
-    })
+    for (let turn = 0; turn < MAX_TURNS; turn++) {
+      const stream = client.messages.stream({
+        model: 'claude-opus-4-7',
+        max_tokens: 1024,
+        system: [
+          {
+            type: 'text',
+            text: fullSystemPrompt,
+            cache_control: { type: 'ephemeral' },
+          },
+        ],
+        tools: UI_TOOLS as unknown as Anthropic.Tool[],
+        messages: conversation,
+      })
 
-    stream.on('error', (error) => {
-      console.error('Error en el stream de Anthropic:', error)
-      res.write(`data: ${JSON.stringify({ error: 'Error al generar la respuesta.' })}\n\n`)
-      res.end()
-    })
+      // Envía cada fragmento de texto al cliente
+      stream.on('text', (text) => {
+        res.write(`data: ${JSON.stringify({ text })}\n\n`)
+      })
 
-    // Espera a que termine el stream
-    await stream.finalMessage()
+      stream.on('error', (error) => {
+        console.error('Error en el stream de Anthropic:', error)
+        res.write(`data: ${JSON.stringify({ error: 'Error al generar la respuesta.' })}\n\n`)
+        res.end()
+      })
+
+      // Espera a que termine este turno del stream
+      const final = await stream.finalMessage()
+
+      const toolUses = final.content.filter(
+        (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use'
+      )
+
+      if (toolUses.length === 0) break
+
+      // Emite cada tool al cliente para que ejecute la acción en la UI
+      const toolResults: Anthropic.ToolResultBlockParam[] = []
+      for (const tu of toolUses) {
+        res.write(`data: ${JSON.stringify({ tool: { name: tu.name, input: tu.input } })}\n\n`)
+        toolResults.push({ type: 'tool_result', tool_use_id: tu.id, content: 'ok' })
+      }
+
+      conversation.push({ role: 'assistant', content: final.content })
+      conversation.push({ role: 'user', content: toolResults })
+    }
 
     res.write('data: [DONE]\n\n')
     res.end()

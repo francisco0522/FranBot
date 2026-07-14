@@ -6,10 +6,15 @@ import { TypingIndicator } from './TypingIndicator'
 import { useChat } from '../../hooks/useChat'
 import { CANDIDATE } from '../../../data/context'
 import { useLanguage } from '../../i18n/LanguageContext'
+import type { ToolAction } from '../../types'
 
-export function ChatWindow() {
+interface ChatWindowProps {
+  onToolAction?: (action: ToolAction) => void
+}
+
+export function ChatWindow({ onToolAction }: ChatWindowProps) {
   const { t } = useLanguage()
-  const { messages, isLoading, isStreaming, sendMessage, clearMessages, cancelStream } = useChat()
+  const { messages, isLoading, isStreaming, sendMessage, clearMessages, cancelStream } = useChat(onToolAction)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 

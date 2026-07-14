@@ -15,6 +15,7 @@ import express from 'express'
 import cors from 'cors'
 import Anthropic from '@anthropic-ai/sdk'
 import { SYSTEM_PROMPT } from '../data/context.js'
+import { UI_TOOLS } from '../data/tools.js'
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
@@ -79,32 +80,57 @@ app.post('/api/chat', async (req, res) => {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
   try {
-    const stream = client.messages.stream({
-      model: 'claude-opus-4-7',
-      max_tokens: 1024,
-      system: [
-        {
-          type: 'text',
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: recentMessages,
-    })
+    // Bucle agéntico: el modelo puede pedir tools que controlan la UI.
+    // Ejecutamos las tools en el cliente, así que respondemos tool_result
+    // 'ok' y volvemos a streamear hasta que el modelo termine con texto.
+    const conversation: Anthropic.MessageParam[] = [...recentMessages]
+    const MAX_TURNS = 5
 
-    stream.on('text', (text) => {
-      res.write(`data: ${JSON.stringify({ text })}\n\n`)
-    })
+    for (let turn = 0; turn < MAX_TURNS; turn++) {
+      const stream = client.messages.stream({
+        model: 'claude-opus-4-7',
+        max_tokens: 1024,
+        system: [
+          {
+            type: 'text',
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' },
+          },
+        ],
+        tools: UI_TOOLS as unknown as Anthropic.Tool[],
+        messages: conversation,
+      })
 
-    stream.on('error', (error) => {
-      console.error('Stream error:', error)
-      if (!res.writableEnded) {
-        res.write(`data: ${JSON.stringify({ error: 'Error al generar la respuesta.' })}\n\n`)
-        res.end()
+      stream.on('text', (text) => {
+        res.write(`data: ${JSON.stringify({ text })}\n\n`)
+      })
+
+      stream.on('error', (error) => {
+        console.error('Stream error:', error)
+        if (!res.writableEnded) {
+          res.write(`data: ${JSON.stringify({ error: 'Error al generar la respuesta.' })}\n\n`)
+          res.end()
+        }
+      })
+
+      const final = await stream.finalMessage()
+
+      const toolUses = final.content.filter(
+        (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use'
+      )
+
+      if (toolUses.length === 0) break
+
+      // Emite cada tool al cliente para que ejecute la acción en la UI
+      const toolResults: Anthropic.ToolResultBlockParam[] = []
+      for (const tu of toolUses) {
+        res.write(`data: ${JSON.stringify({ tool: { name: tu.name, input: tu.input } })}\n\n`)
+        toolResults.push({ type: 'tool_result', tool_use_id: tu.id, content: 'ok' })
       }
-    })
 
-    await stream.finalMessage()
+      conversation.push({ role: 'assistant', content: final.content })
+      conversation.push({ role: 'user', content: toolResults })
+    }
 
     if (!res.writableEnded) {
       res.write('data: [DONE]\n\n')

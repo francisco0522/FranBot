@@ -1,11 +1,26 @@
+import { useEffect } from 'react'
 import { ProjectCard } from '../ui/ProjectCard'
 import { PROJECTS } from '../../data/projects'
 import { useLanguage } from '../../i18n/LanguageContext'
 
-export function Projects() {
+interface ProjectsProps {
+  highlightId?: string | null
+  onHighlightConsumed?: () => void
+}
+
+export function Projects({ highlightId, onHighlightConsumed }: ProjectsProps = {}) {
   const { t } = useLanguage()
   const featured = PROJECTS.filter(p => p.featured)
   const others = PROJECTS.filter(p => !p.featured)
+
+  // Al recibir un proyecto a resaltar: hacer scroll y limpiar tras la animación
+  useEffect(() => {
+    if (!highlightId) return
+    const el = document.getElementById(`project-${highlightId}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const timer = setTimeout(() => onHighlightConsumed?.(), 2600)
+    return () => clearTimeout(timer)
+  }, [highlightId, onHighlightConsumed])
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -25,7 +40,11 @@ export function Projects() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {featured.map(project => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  highlighted={project.id === highlightId}
+                />
               ))}
             </div>
           </section>
@@ -39,7 +58,11 @@ export function Projects() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {others.map(project => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  highlighted={project.id === highlightId}
+                />
               ))}
             </div>
           </section>

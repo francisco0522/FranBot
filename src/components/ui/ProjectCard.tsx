@@ -3,12 +3,20 @@ import { useLanguage } from '../../i18n/LanguageContext'
 
 interface ProjectCardProps {
   project: Project
+  highlighted?: boolean
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, highlighted = false }: ProjectCardProps) {
   const { lang, t } = useLanguage()
   return (
-    <div className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col">
+    <div
+      id={`project-${project.id}`}
+      className={`group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col ${
+        highlighted
+          ? 'border-primary-400 dark:border-primary-500 ring-2 ring-primary-500/60 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 shadow-lg -translate-y-1'
+          : 'border-slate-200 dark:border-slate-700'
+      }`}
+    >
       {/* Imagen del proyecto */}
       <div className="relative aspect-video bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-950 dark:to-slate-800 overflow-hidden">
         {project.image ? (

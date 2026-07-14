@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef } from 'react'
-import type { Message } from '../types'
+import type { Message, ToolAction } from '../types'
 import { useLanguage } from '../i18n/LanguageContext'
 
-export function useChat() {
+export function useChat(onToolAction?: (action: ToolAction) => void) {
   const { t } = useLanguage()
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -97,6 +97,11 @@ export function useChat() {
               throw new Error(parsed.error)
             }
 
+            // Acción de UI disparada por el chatbot (tool use)
+            if (parsed.tool && onToolAction) {
+              onToolAction(parsed.tool as ToolAction)
+            }
+
             if (parsed.text) {
               // Agrega el texto al mensaje del asistente
               setMessages(prev =>
@@ -141,7 +146,7 @@ export function useChat() {
       setIsStreaming(false)
       abortControllerRef.current = null
     }
-  }, [messages, isLoading, isStreaming, t])
+  }, [messages, isLoading, isStreaming, t, onToolAction])
 
   const clearMessages = useCallback(() => {
     setMessages([])
