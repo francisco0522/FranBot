@@ -18,8 +18,11 @@ export function ProjectCard({ project, highlighted = false }: ProjectCardProps) 
       }`}
     >
       {/* Imagen del proyecto */}
-      <div className="relative aspect-video bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-950 dark:to-slate-800 overflow-hidden">
+      <div className={`relative  ${project.image ? 'aspect-video  bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-950 dark:to-slate-800 overflow-hidden '
+      :  'bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-950 dark:to-slate-800 overflow-hidden'
+      }`}>
         {project.image ? (
+          <>
           <img
             src={project.image}
             alt={project.title}
@@ -29,13 +32,15 @@ export function ProjectCard({ project, highlighted = false }: ProjectCardProps) 
               ;(e.target as HTMLImageElement).style.display = 'none'
             }}
           />
-        ) : null}
-        {/* Placeholder / overlay */}
-        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-4xl opacity-30 group-hover:opacity-50 transition-opacity">
             🚀
           </span>
         </div>
+        </>
+        ) : null}
+        {/* Placeholder / overlay */}
+        
         {project.featured && (
           <div className="absolute top-3 right-3 bg-primary-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
             {t.featuredBadge}
