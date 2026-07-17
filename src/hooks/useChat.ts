@@ -1,14 +1,52 @@
-import { useState, useCallback, useRef } from 'react'
-import type { Message, ToolAction } from '../types'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import type { Message, NavSuggestion, ToolAction } from '../types'
 import { useLanguage } from '../i18n/LanguageContext'
+
+// Clave de sessionStorage: el historial persiste mientras la pestaña siga
+// abierta (sobrevive recargas y navegación), y se limpia al cerrarla.
+const STORAGE_KEY = 'franbot:chat'
+
+function loadMessages(): Message[] {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw) as Message[]
+    // Revive el timestamp (JSON lo serializa como string)
+    return parsed.map(m => ({ ...m, timestamp: new Date(m.timestamp) }))
+  } catch {
+    return []
+  }
+}
+
+// Convierte una tool de navegación en una sugerencia (botón CTA)
+function toNavSuggestion(action: ToolAction): NavSuggestion | null {
+  if (action.name === 'navigate_section') {
+    const section = (action.input as { section?: string }).section
+    if (section) return { section: section as NavSuggestion['section'] }
+  }
+  if (action.name === 'highlight_project') {
+    const projectId = (action.input as { project_id?: string }).project_id
+    if (projectId) return { section: 'projects', projectId }
+  }
+  return null
+}
 
 export function useChat(onToolAction?: (action: ToolAction) => void) {
   const { t } = useLanguage()
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<Message[]>(loadMessages)
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+
+  // Persiste el historial en sessionStorage ante cada cambio
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages))
+    } catch {
+      // Ignora errores de cuota/serialización
+    }
+  }, [messages])
 
   const sendMessage = useCallback(async (userInput: string) => {
     if (!userInput.trim() || isLoading || isStreaming) return
@@ -98,8 +136,26 @@ export function useChat(onToolAction?: (action: ToolAction) => void) {
             }
 
             // Acción de UI disparada por el chatbot (tool use)
-            if (parsed.tool && onToolAction) {
-              onToolAction(parsed.tool as ToolAction)
+            if (parsed.tool) {
+              const action = parsed.tool as ToolAction
+              if (action.name === 'set_theme' || action.name === 'set_language') {
+                // Tema/idioma se aplican al instante (no sacan del chat)
+                onToolAction?.(action)
+              } else {
+                // Navegación: NO cambiamos de vista a mitad de conversación.
+                // Se ofrece como botón (CTA) al final del mensaje.
+                const suggestion = toNavSuggestion(action)
+                if (suggestion) {
+                  setMessages(prev =>
+                    prev.map(msg => {
+                      if (msg.id !== assistantMessageId) return msg
+                      // Prioriza una sugerencia con proyecto sobre una genérica
+                      if (msg.navSuggestion?.projectId && !suggestion.projectId) return msg
+                      return { ...msg, navSuggestion: suggestion }
+                    })
+                  )
+                }
+              }
             }
 
             if (parsed.text) {
@@ -151,6 +207,11 @@ export function useChat(onToolAction?: (action: ToolAction) => void) {
   const clearMessages = useCallback(() => {
     setMessages([])
     setError(null)
+    try {
+      sessionStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // Ignora errores de acceso a sessionStorage
+    }
   }, [])
 
   const cancelStream = useCallback(() => {

@@ -30,7 +30,7 @@ export const UI_TOOLS: UITool[] = [
   {
     name: 'navigate_section',
     description:
-      'Navega la interfaz del portafolio a una sección concreta para mostrarle al visitante el contenido relevante mientras conversan. Úsala cuando mostrar visualmente los proyectos, la experiencia, los documentos/CV o el contacto refuerce tu respuesta. No la uses en cada mensaje, solo cuando aporte valor.',
+      'Ofrece al visitante un ACCESO DIRECTO (un botón) hacia una sección del portafolio, que aparece al final de tu respuesta. NO cambia la vista automáticamente: es el visitante quien decide pulsarlo, para no interrumpir la conversación. Úsala cuando invitar a ver los proyectos, la experiencia, los documentos/CV o el contacto refuerce tu respuesta. No la uses en cada mensaje, solo cuando aporte valor.',
     input_schema: {
       type: 'object',
       properties: {
@@ -47,7 +47,7 @@ export const UI_TOOLS: UITool[] = [
   {
     name: 'highlight_project',
     description:
-      'Navega a la sección de Proyectos y resalta visualmente un proyecto específico para que el visitante lo ubique de inmediato. Úsala cuando el visitante pregunte por un proyecto concreto de Francisco.',
+      'Ofrece un ACCESO DIRECTO (un botón) que lleva a la sección de Proyectos y resalta un proyecto específico. Aparece al final de tu respuesta y NO cambia la vista automáticamente: el visitante decide pulsarlo. Úsala cuando el visitante pregunte por un proyecto concreto de Francisco.',
     input_schema: {
       type: 'object',
       properties: {
