@@ -41,6 +41,7 @@ export interface Project {
   longDescription?: Localized
   stack: string[]
   image?: string
+  video?: string
   githubUrl?: string
   demoUrl?: string
   featured?: boolean

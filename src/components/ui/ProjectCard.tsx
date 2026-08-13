@@ -18,7 +18,7 @@ export function ProjectCard({ project, highlighted = false }: ProjectCardProps) 
       }`}
     >
       {/* Imagen del proyecto */}
-      <div className={`relative  ${project.image ? 'aspect-video  bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-950 dark:to-slate-800 overflow-hidden '
+      <div className={`relative  ${project.image || project.video ? 'aspect-video  bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-950 dark:to-slate-800 overflow-hidden '
       :  'bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-950 dark:to-slate-800 overflow-hidden'
       }`}>
         {project.image ? (
@@ -38,6 +38,15 @@ export function ProjectCard({ project, highlighted = false }: ProjectCardProps) 
           </span>
         </div>
         </>
+        ) : project.video ? (
+          <video
+            src={project.video}
+            className="w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
         ) : null}
         {/* Placeholder / overlay */}
         

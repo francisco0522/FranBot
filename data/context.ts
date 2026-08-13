@@ -150,6 +150,27 @@ CONECTA-R
 MUSIC-ABLE
 - Aplicación móvil para ayudar a los DJ a saber qué música quiere escuchar el público en los clubes, mediante una selección por Spotify
 
+FRANBOT (este portafolio)
+- Portafolio interactivo personal construido con React + TypeScript + Vite, desplegado en Vercel
+- Chatbot impulsado por la API de Anthropic (Claude) con streaming SSE en tiempo real
+- Fetch en tiempo real a la GitHub API para mostrar repositorios y actividad actualizada
+- Bilingüe (español / inglés), con prompt caching y rate limiting por IP
+- GitHub: github.com/francisco0522/FranBot
+
+QUINTAL
+- App móvil React Native para gestión integral de pequeños negocios
+- Módulo de inventario (alta, edición, eliminación de productos), calculadora de pedidos con carrito dinámico
+- Escáner QR con react-native-vision-camera para búsqueda rápida de productos
+- Backend en Firebase (Firestore + Auth), estado global con Redux Toolkit
+- GitHub: github.com/francisco0522/Quintal
+
+PARCE APP
+- App móvil React Native social para organizar eventos grupales entre amigos ("parce" = amigo en jerga colombiana)
+- Permite reservar cupos en cenas grupales recurrentes, explorar eventos, gestionar agenda personal
+- Escaneo de cédula colombiana para check-in en eventos con react-native-vision-camera
+- Backend en Firebase (Firestore con listeners en tiempo real), Redux Toolkit, moment.js
+- GitHub: github.com/francisco0522/ParceApp
+
 📋 SOFT SKILLS
 - Liderazgo técnico de proyectos móviles
 - Comunicación clara, tanto técnica como no técnica
