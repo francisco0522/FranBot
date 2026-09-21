@@ -81,6 +81,8 @@ export interface Document {
   type: 'cv' | 'certificate' | 'portfolio' | 'other'
   fileUrl: string
   previewUrl?: string
+  /** Nombre sugerido del archivo al descargarlo */
+  downloadName?: string
   icon?: string
 }
 

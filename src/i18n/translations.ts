@@ -59,6 +59,11 @@ export interface UIStrings {
   documentsTitle: string
   documentsSubtitle: string
   downloadPdf: string
+  viewPdf: string
+  hidePdf: string
+  openInNewTab: string
+  previewFallback: string
+  pdfPreviewOf: (title: string) => string
   cantFind: string
   writeDirectly: string
   docTypeCv: string
@@ -122,8 +127,14 @@ export const TRANSLATIONS: Record<Locale, UIStrings> = {
     mainStack: '🛠️ Stack principal',
     present: 'Presente',
     documentsTitle: 'Documentos',
-    documentsSubtitle: 'CV, portafolio y certificaciones disponibles para descarga.',
+    documentsSubtitle: 'CV, portafolio y certificaciones: míralos aquí mismo o descárgalos.',
     downloadPdf: 'Descargar PDF',
+    viewPdf: 'Ver PDF',
+    hidePdf: 'Ocultar vista previa',
+    openInNewTab: 'Abrir en pestaña nueva',
+    previewFallback:
+      'Si la vista previa no carga en tu dispositivo, ábrelo en una pestaña nueva o descárgalo.',
+    pdfPreviewOf: (title: string) => `Vista previa de ${title}`,
     cantFind: '¿No encuentras lo que buscas?',
     writeDirectly: 'Escríbeme directamente',
     docTypeCv: 'CV / Hoja de vida',
@@ -185,8 +196,14 @@ export const TRANSLATIONS: Record<Locale, UIStrings> = {
     mainStack: '🛠️ Main stack',
     present: 'Present',
     documentsTitle: 'Documents',
-    documentsSubtitle: 'CV, portfolio and certifications available for download.',
+    documentsSubtitle: 'CV, portfolio and certifications: preview them here or download them.',
     downloadPdf: 'Download PDF',
+    viewPdf: 'View PDF',
+    hidePdf: 'Hide preview',
+    openInNewTab: 'Open in a new tab',
+    previewFallback:
+      "If the preview doesn't load on your device, open it in a new tab or download it.",
+    pdfPreviewOf: (title: string) => `Preview of ${title}`,
     cantFind: "Can't find what you're looking for?",
     writeDirectly: 'Write to me directly',
     docTypeCv: 'CV / Resume',

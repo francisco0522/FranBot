@@ -17,7 +17,9 @@ export const DOCUMENTS: Document[] = [
       en: "Francisco Londoño's full CV in Spanish: experience, education, projects and skills.",
     },
     type: 'cv',
-    fileUrl: 'public/cv/Francisco Londoño INGENIERO DE SOFTWARE Y MULTIMEDIA.pdf',
+    // Los archivos de /public se sirven desde la raíz del sitio (sin el prefijo "public/")
+    fileUrl: '/cv/cv-francisco-londono-es.pdf',
+    downloadName: 'Francisco Londono - Ingeniero de Software y Multimedia.pdf',
     icon: '📄',
   },
   {
@@ -31,7 +33,8 @@ export const DOCUMENTS: Document[] = [
       en: "Francisco Londoño's full CV in English: experience, education, projects and skills.",
     },
     type: 'cv',
-    fileUrl: 'public/cv/Francisco Londoño SOFTWARE AND MULTIMEDIA ENGINEER.pdf',
+    fileUrl: '/cv/cv-francisco-londono-en.pdf',
+    downloadName: 'Francisco Londono - Software and Multimedia Engineer.pdf',
     icon: '📄',
   },
 ]

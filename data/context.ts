@@ -44,8 +44,8 @@ export const CANDIDATE: {
   website: '',
   // Ruta a la foto del candidato (colócala en /public/avatar.jpg)
   avatar: '/avatar.jpg',
-  // Ruta al CV en PDF (colócalo en /public/cv.pdf)
-  cvUrl: '/cv.pdf',
+  // Ruta al CV en PDF (los archivos de /public se sirven desde la raíz)
+  cvUrl: '/cv/cv-francisco-londono-es.pdf',
 }
 
 // ── System prompt para el chatbot ───────────────────────────
