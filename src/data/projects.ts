@@ -47,12 +47,13 @@ export const PROJECTS: Project[] = [
       en: 'Programming leader in the Metro de Cali Contest for the mobile application of the MIO mass transit system. Built within a university group alongside other engineering and graphic communication design students.',
     },
     stack: ['React Native', 'JavaScript', 'iOS', 'Android'],
+    demoUrl: 'https://drive.google.com/file/d/1o0SxIxZcC6_GRUtG4IVTZo6mlEg-38qo/view?usp=share_link',
     featured: false,
     year: '2018',
   },
   {
-    id: 'octi-app',
-    title: 'OCTI APP',
+    id: 'otci-app',
+    title: 'OTCI APP',
     description: {
       es: 'App móvil para el observatorio tecnológico de la ciudad inteligente de Cali.',
       en: 'Mobile app for the technological observatory of the smart city of Cali.',

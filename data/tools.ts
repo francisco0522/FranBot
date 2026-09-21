@@ -13,7 +13,7 @@
 export const SECTION_IDS = ['chat', 'projects', 'experience', 'documents', 'contact'] as const
 
 /** IDs de proyecto válidos para highlight_project. */
-export const PROJECT_IDS = ['mio-app', 'octi-app', 'conecta-r', 'music-able'] as const
+export const PROJECT_IDS = ['mio-app', 'otci-app', 'conecta-r', 'music-able'] as const
 
 /** Forma estructural de una tool de Anthropic (desacoplada del SDK). */
 export interface UITool {

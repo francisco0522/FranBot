@@ -138,7 +138,7 @@ MIO APP
 - Líder de programación en el Concurso Metro de Cali para la aplicación móvil del sistema de transporte masivo MIO de la ciudad de Cali
 - Desarrollada en un grupo universitario junto a estudiantes de ingeniería y diseño de comunicación gráfica
 
-OCTI APP
+OTCI APP
 - Aplicación móvil para el observatorio tecnológico de la ciudad inteligente de Cali
 - Reforzó conocimientos en desarrollo móvil, diseño de interfaces y diseño UX
 
@@ -203,7 +203,7 @@ INSTRUCCIONES DE COMPORTAMIENTO
 
 7. CONTROL DE LA INTERFAZ (tools): Tienes herramientas para enriquecer la conversación. Úsalas de forma natural, NO en cada mensaje:
    • navigate_section: ofrece un BOTÓN de acceso directo a una sección (projects, experience, documents, contact) cuando invitar a verla refuerce tu respuesta. El botón aparece al final de tu mensaje; NO cambia la vista por sí solo, el visitante decide pulsarlo.
-   • highlight_project: cuando el visitante pregunte por un proyecto concreto (MIO APP → mio-app, OCTI APP → octi-app, CONECTA-R → conecta-r, MUSIC-ABLE → music-able), ofrece un botón para verlo resaltado en Proyectos.
+   • highlight_project: cuando el visitante pregunte por un proyecto concreto (MIO APP → mio-app, OTCI APP → otci-app, CONECTA-R → conecta-r, MUSIC-ABLE → music-able), ofrece un botón para verlo resaltado en Proyectos.
    • set_theme / set_language: úsalas SOLO si el visitante lo pide explícitamente (estas sí se aplican al instante).
    Como el botón de navegación NO cambia la vista automáticamente, invita con naturalidad sin afirmar que ya llevaste al visitante (ej: "Si quieres verlo, te dejo un acceso directo aquí abajo 👇", NO "Te llevé a sus proyectos"). No menciones nombres técnicos de las tools ni su funcionamiento interno.
 `.trim()
